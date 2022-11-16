@@ -25,6 +25,15 @@ import {
 } from "../../api/services/responder";
 import { relativeDateTime } from "../../utils/date";
 import { DefinitionOfDone } from "./DefinitionOfDone";
+import { Incident, IncidentStatus } from "../../api/services/incident";
+
+type IncidentDetailsProps = {
+  incident: Incident;
+  className?: string;
+  updateStatusHandler: (status: IncidentStatus) => void;
+  updateIncidentHandler: (newDataIncident: Partial<Incident>) => void;
+  textButton?: string;
+};
 
 export const IncidentDetails = ({
   incident,
@@ -32,10 +41,12 @@ export const IncidentDetails = ({
   updateStatusHandler,
   updateIncidentHandler,
   textButton
-}) => {
-  const [responders, setResponders] = useState([]);
+}: IncidentDetailsProps) => {
+  console.log("IncidentDetails incident", incident);
+
+  const [responders, setResponders] = useState<any>([]);
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
-  const [deletedResponder, setDeletedResponder] = useState();
+  const [deletedResponder, setDeletedResponder] = useState<any>();
   const [openResponderDetailsDialog, setOpenResponderDetailsDialog] =
     useState(false);
   const [selectedResponder, setSelectedResponder] = useState();
@@ -65,7 +76,7 @@ export const IncidentDetails = ({
       statusPageTitle: "StatusPage.io",
       statusPage: "https://www.atlassian.com/software/statuspage",
       priority: incident.severity ?? IncidentPriority.High,
-      type: typeItems[incident.type] ? incident.type : "",
+      type: typeItems[incident.type!] ? incident.type : "",
       commanders: incident.commander_id.id
     }
   });
@@ -157,7 +168,7 @@ export const IncidentDetails = ({
   }
 
   async function initiateDeleteResponder() {
-    const id = deletedResponder.id;
+    const id = deletedResponder?.id;
     try {
       const result = await deleteResponder(id);
       if (!result?.error) {
@@ -167,7 +178,7 @@ export const IncidentDetails = ({
         toastError("Responder delete failed");
       }
     } catch (ex) {
-      toastError(ex.message);
+      toastError((ex as Error).message);
     }
     setOpenDeleteConfirmDialog(false);
   }
@@ -259,8 +270,8 @@ export const IncidentDetails = ({
               label=""
               name="priority"
               className="w-full"
-              items={priorities}
-              value={watchPriority}
+              items={priorities as any}
+              value={watchPriority as any}
             />
           }
         />
@@ -273,7 +284,7 @@ export const IncidentDetails = ({
         </div>
         {Boolean(responders.length) && (
           <div className="px-4">
-            {responders.map((responder) => {
+            {responders.map((responder: any) => {
               return (
                 <div
                   key={responder.json.id}
