@@ -19,6 +19,7 @@ export interface ConfigItem {
   cost_total_1d?: number;
   cost_total_7d?: number;
   cost_total_30d?: number;
+  config: Record<string, any>;
 }
 
 export type ConfigTypeRelationships = {

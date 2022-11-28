@@ -63,8 +63,6 @@ export function ConfigDetailsPage() {
   }, []);
 
   const code = useMemo(() => {
-    // @ts-ignore
-
     if (!configDetails?.config) {
       return "";
     }
@@ -74,7 +72,7 @@ export function ConfigDetailsPage() {
 
     const ordered = Object.keys(configDetails.config)
       .sort()
-      .reduce((obj, key) => {
+      .reduce((obj: Record<string, any>, key) => {
         obj[key] = configDetails.config[key];
         return obj;
       }, {});

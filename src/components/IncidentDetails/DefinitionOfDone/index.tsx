@@ -1,11 +1,11 @@
 import clsx from "clsx";
-import { rest } from "lodash";
 import { useEffect, useMemo, useState } from "react";
 import { AiFillCheckCircle } from "react-icons/ai";
 import { BsHourglassSplit, BsTrash } from "react-icons/bs";
 import { MdRefresh } from "react-icons/md";
 import { RiFullscreenLine } from "react-icons/ri";
 import { useSearchParams } from "react-router-dom";
+import { useIncidentQuery } from "../../../api/query-hooks";
 import { Evidence, updateEvidence } from "../../../api/services/evidence";
 import { Hypothesis } from "../../../api/services/hypothesis";
 import { Size } from "../../../types";
@@ -15,7 +15,6 @@ import { EvidenceItem } from "../../Hypothesis/EvidenceSection";
 import { IconButton } from "../../IconButton";
 import { Menu } from "../../Menu";
 import { Modal } from "../../Modal";
-import { useIncidentQuery } from "../../../api/query-hooks";
 import { EvidenceView } from "./EvidenceView";
 
 type DefinitionOfDoneProps = {
@@ -54,7 +53,7 @@ function AddDefinitionOfDone({ onClick }: { onClick: () => void }) {
 }
 
 export function DefinitionOfDone({ incidentId }: DefinitionOfDoneProps) {
-  const [size] = useState<Size>(Size.small);
+  const size = Size.small;
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [evidenceBeingRemoved, setEvidenceBeingRemoved] = useState<Evidence>();
   const [dodEvidences, setDODEvidences] = useState<Evidence[]>([]);
