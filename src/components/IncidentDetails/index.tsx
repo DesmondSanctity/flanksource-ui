@@ -1,30 +1,39 @@
 import { useEffect, useMemo, useState } from "react";
 
 import clsx from "clsx";
-import { useForm } from "react-hook-form";
-import { RiCloseCircleLine } from "react-icons/ri";
-import { BsShareFill, BsTrash } from "react-icons/bs";
 import { template } from "lodash";
+import { useForm } from "react-hook-form";
+import { BsShareFill, BsTrash } from "react-icons/bs";
+import { RiCloseCircleLine } from "react-icons/ri";
 
+import { DeleteConfirmDialog } from "../DeleteConfirmDialog";
 import { Icon } from "../Icon";
 import { IconButton } from "../IconButton";
-import { toastError, toastSuccess } from "../Toast/toast";
-import { IncidentDetailsRow } from "./IncidentDetailsRow";
 import { ReactSelectDropdown } from "../ReactSelectDropdown";
-import { DeleteConfirmDialog } from "../DeleteConfirmDialog";
+import { toastError, toastSuccess } from "../Toast/toast";
+import { AddResponder, ResponderPropsKeyToLabelMap } from "./AddResponder";
+import { IncidentDetailsRow } from "./IncidentDetailsRow";
 import { ResponderDetailsDialog } from "./ResponderDetailsDialog";
 import { ResponderDetailsToolTip } from "./ResponderDetailsToolTip";
-import { AddResponder, ResponderPropsKeyToLabelMap } from "./AddResponder";
 
-import { priorities } from "./data";
-import { typeItems } from "../Incidents/data";
-import { IncidentPriority } from "../../constants/incident-priority";
+import { Incident, IncidentStatus } from "../../api/services/incident";
 import {
   deleteResponder,
   getRespondersForTheIncident
 } from "../../api/services/responder";
+import { IncidentPriority } from "../../constants/incident-priority";
 import { relativeDateTime } from "../../utils/date";
+import { typeItems } from "../Incidents/data";
+import { priorities } from "./data";
 import { DefinitionOfDone } from "./DefinitionOfDone";
+
+type IncidentDetailsProps = {
+  incident: Incident;
+  className?: string;
+  updateStatusHandler: (status: IncidentStatus) => void;
+  updateIncidentHandler: (newDataIncident: Partial<Incident>) => void;
+  textButton: string;
+};
 
 export const IncidentDetails = ({
   incident,
@@ -32,7 +41,7 @@ export const IncidentDetails = ({
   updateStatusHandler,
   updateIncidentHandler,
   textButton
-}) => {
+}: IncidentDetailsProps) => {
   const [responders, setResponders] = useState([]);
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [deletedResponder, setDeletedResponder] = useState();
@@ -292,7 +301,7 @@ export const IncidentDetails = ({
                             )}
                             <div
                               className="inline-block pl-1 align-middle"
-                              onClick={(e) => {
+                              onClick={() => {
                                 setOpenResponderDetailsDialog(true);
                                 setSelectedResponder(responder);
                               }}

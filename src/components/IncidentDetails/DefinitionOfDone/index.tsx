@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
 import { AiFillCheckCircle } from "react-icons/ai";
 import { BsHourglassSplit, BsTrash } from "react-icons/bs";
@@ -16,12 +15,13 @@ import { IconButton } from "../../IconButton";
 import { Menu } from "../../Menu";
 import { Modal } from "../../Modal";
 import { EvidenceView } from "./EvidenceView";
+import { AddDefinitionOfDone } from "../AddDefinitionOfDone";
 
 type DefinitionOfDoneProps = {
   incidentId: string;
 };
 
-function AddDefinitionOfDone({ onClick }: { onClick: () => void }) {
+function AddDefinitionOfDoneButton({ onClick }: { onClick: () => void }) {
   return (
     <div className="flex items-center justify-between py-2">
       <button
@@ -61,7 +61,6 @@ export function DefinitionOfDone({ incidentId }: DefinitionOfDoneProps) {
   const [addToDODModalOpen, setAddToDODModalOpen] = useState(false);
   const [nonDODEvidences, setNonDODEvidences] = useState<Evidence[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedEvidences, setSelectedEvidences] = useState<Evidence[]>([]);
   const [refreshEvidencesToken, setRefreshEvidencesToken] = useState<
     string | null
   >(null);
@@ -132,24 +131,6 @@ export function DefinitionOfDone({ incidentId }: DefinitionOfDoneProps) {
       ...searchParamsToObj(searchParams),
       refresh_evidences: token
     });
-  };
-
-  const blukAddEvidencesToDOD = async () => {
-    for (const element of selectedEvidences) {
-      try {
-        await updateEvidence(element.id, {
-          definition_of_done: true
-        });
-        element.definition_of_done = true;
-        setNonDODEvidences(nonDODEvidences.filter((v) => v.id !== element.id));
-      } catch (ex) {}
-    }
-    setDODEvidences([...dodEvidences, ...selectedEvidences]);
-    assignNewEvidencesRefreshToken();
-  };
-
-  const isSelected = (id: string) => {
-    return !!selectedEvidences.find((item) => item.id === id);
   };
 
   return (
@@ -229,10 +210,9 @@ export function DefinitionOfDone({ incidentId }: DefinitionOfDoneProps) {
                 </div>
               );
             })}
-          <AddDefinitionOfDone
+          <AddDefinitionOfDoneButton
             onClick={() => {
               setAddToDODModalOpen(true);
-              setSelectedEvidences([]);
             }}
           />
         </div>
@@ -272,79 +252,27 @@ export function DefinitionOfDone({ incidentId }: DefinitionOfDoneProps) {
         title="Add to Definition of done"
         onClose={() => {
           setAddToDODModalOpen(false);
-          setSelectedEvidences([]);
         }}
         open={addToDODModalOpen}
         bodyClass=""
       >
-        <div
-          style={{ maxHeight: "calc(100vh - 6rem)" }}
-          className="overflow-y-auto overflow-x-hidden divide-y divide-gray-200 mb-20"
-        >
-          {nonDODEvidences.map((evidence, index) => {
-            return (
-              <div key={index} className="relative flex items-center p-6">
-                <div className="min-w-0 flex-1 text-sm mr-4">
-                  <EvidenceView evidence={evidence} size={size} />
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    checked={isSelected(evidence.id)}
-                    onChange={(e) => {
-                      setSelectedEvidences((val) => {
-                        if (val.includes(evidence)) {
-                          return val.filter((v) => v.id !== evidence.id);
-                        } else {
-                          return [...val, evidence];
-                        }
-                      });
-                    }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-          {!Boolean(nonDODEvidences.length) && (
+        <div className="w-full flex flex-col p-6 bg-gray-100">
+          {nonDODEvidences.length > 0 ? (
+            <AddDefinitionOfDone
+              nonDODEvidences={nonDODEvidences}
+              onAddDefinitionOfDone={(evidence) => {
+                setAddToDODModalOpen(false);
+                setDODEvidences([...dodEvidences, evidence]);
+                setNonDODEvidences(
+                  nonDODEvidences.filter((v) => v.id !== evidence.id)
+                );
+              }}
+            />
+          ) : (
             <div className="flex items-center justify-center py-5 px-5 h-56">
               <div className="text-sm text-gray-500">
-                There are no evidences which are not part of defintion of done
+                There are no evidences which are not part of definition of done
               </div>
-            </div>
-          )}
-        </div>
-        <div
-          className={clsx(
-            "flex rounded-t-lg justify-between bg-gray-100 px-8 pb-4 items-end",
-            "absolute w-full bottom-0 left-0"
-          )}
-        >
-          <div className="flex flex-1">
-            <button
-              type="submit"
-              className={clsx("btn-secondary-base btn-secondary", "mt-4")}
-              onClick={() => {
-                setAddToDODModalOpen(false);
-                setSelectedEvidences([]);
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-          {Boolean(nonDODEvidences.length) && (
-            <div className="flex flex-1 justify-end">
-              <button
-                disabled={selectedEvidences.length === 0}
-                type="submit"
-                className={clsx("btn-primary", "mt-4")}
-                onClick={() => {
-                  setAddToDODModalOpen(false);
-                  blukAddEvidencesToDOD();
-                }}
-              >
-                Add
-              </button>
             </div>
           )}
         </div>
