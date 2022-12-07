@@ -13,6 +13,8 @@ import {
   HiOutlineChevronUp,
   HiOutlineMinus
 } from "react-icons/hi";
+import { IncidentStatus } from "../../api/services/incident";
+import { capitalizeFirstLetter } from "../../utils/common";
 
 export const severityItems = {
   Low: {
@@ -53,19 +55,47 @@ export const severityItems = {
 } as const;
 
 export const statusItems = {
-  open: {
-    id: "dropdown-status-open",
+  [IncidentStatus.Open]: {
+    id: `dropdown-status-${IncidentStatus.Open}`,
     icon: <RiLightbulbFill color="green" />,
-    name: "open",
-    description: "Open",
-    value: "open"
+    name: IncidentStatus.Open,
+    description: capitalizeFirstLetter(IncidentStatus.Open),
+    value: IncidentStatus.Open
   },
-  closed: {
-    id: "dropdown-status-closed",
+  [IncidentStatus.Closed]: {
+    id: `dropdown-status-${IncidentStatus.Closed}`,
     icon: <AiOutlineClose color="gray" />,
-    name: "closed",
-    description: "Closed",
-    value: "closed"
+    name: IncidentStatus.Closed,
+    description: capitalizeFirstLetter(IncidentStatus.Closed),
+    value: IncidentStatus.Closed
+  },
+  [IncidentStatus.New]: {
+    id: `dropdown-status-${IncidentStatus.New}`,
+    icon: <RiLightbulbFill color="green" />,
+    name: IncidentStatus.New,
+    description: capitalizeFirstLetter(IncidentStatus.New),
+    value: IncidentStatus.New
+  },
+  [IncidentStatus.Mitigated]: {
+    id: `dropdown-status-${IncidentStatus.Mitigated}`,
+    icon: <RiLightbulbFill color="green" />,
+    name: IncidentStatus.Mitigated,
+    description: capitalizeFirstLetter(IncidentStatus.Mitigated),
+    value: IncidentStatus.Mitigated
+  },
+  [IncidentStatus.Investigating]: {
+    id: `dropdown-status-${IncidentStatus.Investigating}`,
+    icon: <RiLightbulbFill color="green" />,
+    name: IncidentStatus.Investigating,
+    description: capitalizeFirstLetter(IncidentStatus.Investigating),
+    value: IncidentStatus.Investigating
+  },
+  [IncidentStatus.Resolved]: {
+    id: `dropdown-status-${IncidentStatus.Resolved}`,
+    icon: <RiLightbulbFill color="green" />,
+    name: IncidentStatus.Resolved,
+    description: capitalizeFirstLetter(IncidentStatus.Resolved),
+    value: IncidentStatus.Resolved
   }
 } as const;
 

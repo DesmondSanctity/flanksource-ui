@@ -17,7 +17,7 @@ import { ResponderDetailsToolTip } from "./ResponderDetailsToolTip";
 import { AddResponder, ResponderPropsKeyToLabelMap } from "./AddResponder";
 
 import { priorities } from "./data";
-import { typeItems } from "../Incidents/data";
+import { statusItems, typeItems } from "../Incidents/data";
 import { IncidentPriority } from "../../constants/incident-priority";
 import {
   deleteResponder,
@@ -25,6 +25,7 @@ import {
 } from "../../api/services/responder";
 import { relativeDateTime } from "../../utils/date";
 import { DefinitionOfDone } from "./DefinitionOfDone";
+import { IncidentWorkflow } from "./IncidentWorkflow";
 
 export const IncidentDetails = ({
   incident,
@@ -66,6 +67,7 @@ export const IncidentDetails = ({
       statusPage: "https://www.atlassian.com/software/statuspage",
       priority: incident.severity ?? IncidentPriority.High,
       type: typeItems[incident.type] ? incident.type : "",
+      status: statusItems[incident.status] ? incident.status : "",
       commanders: incident.commander_id.id
     }
   });
@@ -190,13 +192,6 @@ export const IncidentDetails = ({
             <span className="relative z-0 inline-flex rounded-md shadow-sm">
               <button
                 type="button"
-                className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                onClick={updateStatusHandler}
-              >
-                <RiCloseCircleLine className="w-4 h-4 mr-1" /> {textButton}
-              </button>
-              <button
-                type="button"
                 className="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               >
                 <BsShareFill className="w-3 h-3 mr-1" /> Share
@@ -247,6 +242,19 @@ export const IncidentDetails = ({
               className="w-full"
               items={typeItems}
               value={watchType}
+            />
+          }
+        />
+        <IncidentDetailsRow
+          title="Status"
+          className="mt-3 px-4"
+          value={
+            <IncidentWorkflow
+              control={control}
+              label=""
+              name="status"
+              className="w-full"
+              incidentId={incident.id}
             />
           }
         />
