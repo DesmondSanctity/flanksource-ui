@@ -71,3 +71,6 @@ export const getRegisteredUsers = () =>
 
 export const inviteUser = ({ firstName, lastName, email }: InviteUserPayload) =>
   resolve<{}>(Auth.post("/invite_user", { firstName, lastName, email }));
+
+export const deleteUser = (userId: string) =>
+  resolve<{}>(Auth.delete(`/user?userId=${userId}`));

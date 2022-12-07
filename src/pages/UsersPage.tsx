@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ImUserPlus } from "react-icons/im";
 import {
+  deleteUser,
   getRegisteredUsers,
   inviteUser,
   RegisteredUser
@@ -43,6 +44,18 @@ export function UsersPage() {
     setLoading(false);
   }
 
+  async function deleteUserAction(userId: string) {
+    try {
+      const { data } = await deleteUser(userId);
+      fetchUsersList();
+      if (data) {
+        toastSuccess(`user deleted successfully`);
+      }
+    } catch (ex) {
+      toastError(ex);
+    }
+  }
+
   useEffect(() => {
     fetchUsersList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,7 +70,7 @@ export function UsersPage() {
       contentClass="p-0 h-full"
       loading={loading}
     >
-      <div className="flex flex-col flex-1 p-6 pb-0 h-full w-full">
+      <div className="max-w-screen-xl mx-auto h-full space-y-6 flex flex-col mt-6">
         <div className="flex justify-end">
           <button className="btn-primary w-36" onClick={(e) => setIsOpen(true)}>
             <ImUserPlus className="mr-2" />
@@ -68,6 +81,9 @@ export function UsersPage() {
           className="mt-6 overflow-y-hidden"
           data={users}
           isLoading={loading}
+          deleteUser={(userId) => {
+            deleteUserAction(userId);
+          }}
         />
         <Modal
           title="Invite User"
