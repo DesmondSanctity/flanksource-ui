@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { IoChevronForwardOutline } from "react-icons/io5";
 import { TiArrowSortedDown, TiArrowSortedUp } from "react-icons/ti";
 import { useSearchParams } from "react-router-dom";
@@ -12,6 +12,7 @@ import {
   useReactTable
 } from "@tanstack/react-table";
 import { Badge } from "../Badge";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 const tableStyles = {
   tableClass: "table-auto w-full",
@@ -55,6 +56,8 @@ export function DataTable<TableColumns, Data extends TableColumns>({
   const isSortOrderDesc =
     queryParams.get("sortOrder") === "desc" ? true : false;
 
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
   const sortBy = useMemo(() => {
     const data = sortField
       ? [
@@ -78,32 +81,34 @@ export function DataTable<TableColumns, Data extends TableColumns>({
     groupBy ?? []
   );
 
-  const table = useReactTable<TableColumns>(
-    {
-      columns,
-      data,
-      // autoResetSortBy: false,
-      state: {
-        sorting: tableSortBy,
-        grouping: tableGroupBy
-        // columnFilters: hiddenColumns,
-      },
-      // onRowSelectionChange: setRowSelection,
-      getCoreRowModel: getCoreRowModel(),
-      enableColumnResizing: true,
-      debugTable: true,
-      debugHeaders: true,
-      debugColumns: true,
-      onSortingChange: setTableSortBy,
-      onGroupingChange: setTableGroupBy
-    }
-
-    // useGroupBy,
-    // useSortBy,
-    // useExpanded
-  );
+  const table = useReactTable<TableColumns>({
+    columns,
+    data,
+    // autoResetSortBy: false,
+    state: {
+      sorting: tableSortBy,
+      grouping: tableGroupBy
+      // columnFilters: hiddenColumns,
+    },
+    // onRowSelectionChange: setRowSelection,
+    getCoreRowModel: getCoreRowModel(),
+    enableColumnResizing: true,
+    debugTable: true,
+    debugHeaders: true,
+    debugColumns: true,
+    onSortingChange: setTableSortBy,
+    onGroupingChange: setTableGroupBy
+  });
 
   const isGrouped = !!groupBy?.length;
+
+  const { rows } = table.getRowModel();
+
+  const { getVirtualItems } = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => 35
+  });
 
   useEffect(() => {
     setTableGroupBy(Array.isArray(groupBy) ? groupBy : []);
@@ -123,6 +128,7 @@ export function DataTable<TableColumns, Data extends TableColumns>({
 
   return (
     <div
+      ref={tableContainerRef}
       className={clsx("flex flex-col flex-1 overflow-y-auto", className)}
       {...rest}
     >
@@ -170,7 +176,8 @@ export function DataTable<TableColumns, Data extends TableColumns>({
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row) => {
+          {getVirtualItems().map((item) => {
+            const row = rows[item.index];
             return (
               <tr
                 key={row.id}
