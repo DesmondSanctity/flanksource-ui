@@ -48,9 +48,6 @@ export function ComponentTypesDropdown({
 
   return (
     <div className={className} {...rest}>
-      <label className="self-center inline-block pt-2 mr-3 text-sm text-gray-500">
-        {`${name}:`}
-      </label>
       <ReactSelectDropdown
         label={label}
         name={name}
@@ -60,6 +57,11 @@ export function ComponentTypesDropdown({
         onChange={(val: any) => {
           onChange(val);
         }}
+        prefix={
+          <div className="text-xs text-gray-500 mr-2 whitespace-nowrap">
+            {`${name}:`}
+          </div>
+        }
       />
     </div>
   );
